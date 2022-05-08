@@ -15,8 +15,8 @@ class Jumper:
         self.screen_rect = self.screen.get_rect()
         #clock to manage frames of the game
         self.clock = pygame.time.Clock()
-
         self.player = Player(self)
+
 
 
 
@@ -30,6 +30,7 @@ class Jumper:
             self.player.moving_left = True
         if event.key == pygame.K_SPACE:
             self.player.jumping = True
+            self.player.current_time = pygame.time.get_ticks()
 
     def check_keyup(self,event):
         "checks for key events regarding the player movement"
@@ -63,7 +64,6 @@ class Jumper:
             #functions for player
             self.player.move()
             self.player.jump()
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()

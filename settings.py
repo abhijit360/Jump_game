@@ -15,6 +15,8 @@ class Settings:
         #platform settings
         self.platform_width = 60
         self.platform_height = 5
+        self.player_jumpVel = 3
+
 
         # misc settings
-        self.gravity_val = 1
+        self.gravity_val = -0.01
