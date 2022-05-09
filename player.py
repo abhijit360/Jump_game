@@ -15,10 +15,10 @@ class Player(Sprite):
         self.rect.bottom = self.screen_rect.bottom
 
         # player movement tags
-        self.moving_right, self.moving_left, self.jumping, self.gravity_flag = False, False, False, True
+        self.moving_right, self.moving_left, self.jumping = False, False, False
         self.current_jump_vel = self.settings.player_jumpVel
 
-        self.current_time = 0
+        self.vel_list = []
     def draw_player(self):
         # creating the player surface
         self.screen.fill((255, 0, 0), self.rect)
@@ -29,29 +29,23 @@ class Player(Sprite):
         if self.moving_left and self.rect.topleft[0] > 0:
             self.rect.centerx -= self.settings.player_speed
 
-
-    def apply_gravity(self):
-        "To add an effect of gravity that can be toggled on and off using a gravity flag"
-        if self.gravity_flag:
-            self.rect.y += self.settings.gravity_val
-
     def jump(self):
         """ Jump mechanism of player"""
-        if self.jumping and self.current_jump_vel >= -self.settings.player_jumpVel:
-            self.rect.centery -= self.current_jump_vel * (pygame.time.get_ticks() - self.current_time)
-            self.current_jump_vel += self.settings.gravity_val * (pygame.time.get_ticks() - self.current_time)
-            print(self.rect.centery)
-        else:
+        if self.jumping and round(self.current_jump_vel,1) >= -self.settings.player_jumpVel:
+            self.settings.grav_flag = False
+            self.rect.centery -= self.current_jump_vel
+            self.current_jump_vel += self.settings.gravity_val
+        if round(self.current_jump_vel,1) == -self.settings.player_jumpVel:
             # set jump flag back to false
-            self.jumping = False
             self.current_jump_vel = self.settings.player_jumpVel
+            self.settings.grav_flag = True
+            self.jumping = False
 
 
+    def apply_gravity(self):
+        if self.settings.grav_flag:
+            self.rect.centery -= self.settings.falling_vel
+            self.settings.falling_vel += self.settings.gravity_val
+        else:
+            self.settings.falling_vel = self.settings.gravity_val
 
-        # if self.jumping and self.rect.bottom < self.current_height - self.settings.jump_height:
-        #     # stop moving once peak height is reached and resume gravity
-        #     self.jumping, self.gravity_flag = False, True
-
-
-        # if not self.jumping and self.rect.bottom <= self.current_height:
-        #     self.rect.y += self.settings.gravity_val

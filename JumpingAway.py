@@ -15,10 +15,26 @@ class Jumper:
         self.screen_rect = self.screen.get_rect()
         #clock to manage frames of the game
         self.clock = pygame.time.Clock()
+
         self.player = Player(self)
 
+        self.platform_group = pygame.sprite.Group()
 
+    # def generate_platform(self):
+    #     for i in range(1,25):
+    #         plat = Platform(self)
+    #         plat.rect.centerx = random.randint(self.settings.platform_width/2 , self.settings.screen_width
+    #                                            - self.settings.platform_width)
+    #         plat.rect.centery = random.randint(0 + self.settings.platform_height , self.settings.screen_height
+    #                                            - self.settings.platform_height)
+    #         self.platform_group.add(plat)
 
+    def check_player_plat_collision(self):
+        for plat in self.platform_group:
+            if pygame.sprite.collide_rect(self.player, plat):
+                if self.player.rect.bottom - plat.rect.top < 2 :
+                    self.player.rect.bottom = plat.rect.top
+                    self.settings.grav_flag = False
 
 
     def check_keydown(self,event):
@@ -30,7 +46,6 @@ class Jumper:
             self.player.moving_left = True
         if event.key == pygame.K_SPACE:
             self.player.jumping = True
-            self.player.current_time = pygame.time.get_ticks()
 
     def check_keyup(self,event):
         "checks for key events regarding the player movement"
@@ -48,13 +63,17 @@ class Jumper:
 
         # draw player
         self.player.draw_player()
+        # draw the platforms
+        self.platform_group.draw(self.screen)
 
         pygame.display.flip()
 
 
     def run_game(self):
         " manages the main loop that keeps the game running"
-        #self.generate_platforms()
+        #self.generate_platform()
+        plat = Platform(self)
+        self.platform_group.add(plat)
         while True:
             # keep game at 60 fps
             self.clock.tick(60)
@@ -64,6 +83,11 @@ class Jumper:
             #functions for player
             self.player.move()
             self.player.jump()
+            self.player.apply_gravity()
+
+            #checking collision
+            self.check_player_plat_collision()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()

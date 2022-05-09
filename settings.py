@@ -18,5 +18,7 @@ class Settings:
         self.player_jumpVel = 3
 
 
-        # misc settings
-        self.gravity_val = -0.01
+        # gravity settings
+        self.gravity_val = -0.1
+        self.falling_vel = self.gravity_val
+        self.grav_flag = True

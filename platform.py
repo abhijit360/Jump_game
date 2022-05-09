@@ -9,15 +9,7 @@ class Platform(Sprite):
         self.player = JA.player
 
         #platform
-        self.image = pygame.surface.Surface((self.settings.platform_width,self.settings.platform_height))
+        self.image = pygame.Surface((self.settings.platform_width,self.settings.platform_height))
         self.rect = self.image.get_rect()
-
-
-
-    def update(self):
-        self.rect.y += 1
-        if self.rect.y > self.settings.screen_height:
-            pygame.sprite.Sprite.kill(self)
-
-
+        self.rect.center = (150,self.settings.screen_height - 60)
 
