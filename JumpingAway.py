@@ -32,7 +32,6 @@ class Jumper:
             self.platform_group.add(plat)
 
     def manage_platforms(self):
-        print(len(self.platform_group))
         for plat in self.platform_group:
             if plat.rect.y > self.settings.screen_height:
                 self.platform_group.remove(plat)
@@ -72,6 +71,11 @@ class Jumper:
         self.platform_group.draw(self.screen)
         pygame.display.flip()
 
+    def end_game(self):
+        ''' checks if situations to end game are met'''
+        if self.player.rect.y > self.settings.screen_height:
+            pygame.quit()
+            sys.exit()
 
     def run_game(self):
         " manages the main loop that keeps the game running"
@@ -96,6 +100,8 @@ class Jumper:
             #update platforms
             self.platform_group.update(self.player.scroll)
             self.manage_platforms()
+
+            self.end_game()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
