@@ -35,7 +35,7 @@ class Player(Sprite):
         if self.moving_left and self.rect.topleft[0] > 0:
             self.rect.centerx -= self.settings.player_speed
         if self.jumping and self.rect.bottom < self.scroll_threshold:
-            self.scroll = - self.current_jump_vel
+            self.scroll = - self.current_jump_vel * 1.25
         else:
             self.scroll = 0
 

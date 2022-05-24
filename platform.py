@@ -8,7 +8,7 @@ class Platform(Sprite):
         self.screen = JA.screen
         self.player = JA.player
 
-        #platform
+        #platform rect, image, and position
         self.image = pygame.Surface((width,self.settings.platform_height))
         self.rect = self.image.get_rect()
         self.rect.x,self.rect.y = (x,y)

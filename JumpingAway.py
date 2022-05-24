@@ -2,6 +2,7 @@ import pygame , sys , random
 from settings import Settings
 from player import Player
 from platform import Platform
+from enemy import Enemy
 
 
 
@@ -19,22 +20,49 @@ class Jumper:
         self.platform_group = pygame.sprite.Group()
         self.player = Player(self,self.platform_group)
 
-    def generate_platform(self, offset_x=250,offset_y=350):
+        self.enemy_group = pygame.sprite.Group()
+
+
+    def spawn_enemy(self):
+        """Spawns enemy and removes any platforms in its path"""
+        if len(self.enemy_group) < 1:
+            global path_block, path_surf
+            enemy_x = random.randint(0, self.settings.screen_width)
+            enemy_y = random.randint(0, self.settings.screen_height)
+            path_block = pygame.Rect((enemy_x, enemy_y), (32,self.settings.screen_width))
+            # create a rectangle that represents the path taken by the enemy.
+            enemy = Enemy(enemy_x,enemy_y,self)
+            self.enemy_group.add(enemy)
+
+        for plat in self.platform_group.sprites():
+            # checks if any platforms collide with the path of the enemy and removes them
+            if path_block.colliderect(plat):
+                self.platform_group.remove(plat)
+
+    def generate_platform(self, offset_x=155,offset_y=500):
         """ produces a fixed number of platform sprites and adds it to the group"""
         for i in range(10):
             P_width = random.randint(30,60)
             P_x = random.randint(0,self.settings.screen_width - P_width)
-            P_y = random.randint(120,200)
+            P_y = random.randint(100,150)
             if i == 0:
                 plat = Platform(self,offset_x,offset_y,P_width)
                 self.platform_group.add(plat)
             plat = Platform(self,P_x,(offset_y - (P_y *i)),P_width)
             self.platform_group.add(plat)
 
-    def manage_platforms(self):
+    def manage_sprites(self):
+        """ manages the all sprite groups"""
+
+        # Kills platforms that reach the bottom of the screen
         for plat in self.platform_group:
             if plat.rect.y > self.settings.screen_height:
                 self.platform_group.remove(plat)
+
+        # kills enemies that reach the bottom of the screen
+        for enemy in self.enemy_group:
+            if enemy.rect.y > self.settings.screen_height:
+                self.enemy_group.remove(enemy)
 
         if len(self.platform_group) < 8:
             self.generate_platform(offset_y=-25)
@@ -69,6 +97,8 @@ class Jumper:
         self.player.draw_player()
         # draw the platforms
         self.platform_group.draw(self.screen)
+        #draw enemy and moving sprites
+        self.enemy_group.draw(self.screen)
         pygame.display.flip()
 
     def end_game(self):
@@ -76,6 +106,10 @@ class Jumper:
         if self.player.rect.y > self.settings.screen_height:
             pygame.quit()
             sys.exit()
+        for enemy in self.enemy_group:
+            if self.player.rect.colliderect(enemy.rect):
+                pygame.quit()
+                sys.exit()
 
     def run_game(self):
         " manages the main loop that keeps the game running"
@@ -99,7 +133,11 @@ class Jumper:
 
             #update platforms
             self.platform_group.update(self.player.scroll)
-            self.manage_platforms()
+            self.manage_sprites()
+
+            # create enemy and update enemy group
+            self.spawn_enemy( )
+            self.enemy_group.update(self.player.scroll)
 
             self.end_game()
             for event in pygame.event.get():
