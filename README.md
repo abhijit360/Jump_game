@@ -25,10 +25,4 @@ platform: collapsing, larger platforms,
 final goals:
 learn a bit of swift to get this game running on the app store
 
-today's goals:
-- spawning platforms (done)
-- moving platforms (a sense of upward motion)
-- player and platform interaction
-    - jumping is only possible while on a platform
-    - jumping off a platform
 

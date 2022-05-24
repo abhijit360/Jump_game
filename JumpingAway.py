@@ -3,7 +3,7 @@ from settings import Settings
 from player import Player
 from platform import Platform
 from enemy import Enemy
-
+from displays import Score
 
 
 class Jumper:
@@ -20,6 +20,7 @@ class Jumper:
         self.platform_group = pygame.sprite.Group()
         self.player = Player(self,self.platform_group)
 
+        self.score = Score(self)
         self.enemy_group = pygame.sprite.Group()
 
 
@@ -99,17 +100,28 @@ class Jumper:
         self.platform_group.draw(self.screen)
         #draw enemy and moving sprites
         self.enemy_group.draw(self.screen)
+        # draw score and displahy highscore
+        self.score.draw_current_score()
+        self.score.display_highscore()
         pygame.display.flip()
 
     def end_game(self):
         ''' checks if situations to end game are met'''
         if self.player.rect.y > self.settings.screen_height:
+            self.save_score()
             pygame.quit()
             sys.exit()
         for enemy in self.enemy_group:
             if self.player.rect.colliderect(enemy.rect):
+                self.save_score()
                 pygame.quit()
                 sys.exit()
+
+
+    def save_score(self):
+        file_object = "score.txt"
+        with open(file_object,"w+") as fo:
+            fo.write(str(round(self.score.distance_travelled)))
 
     def run_game(self):
         " manages the main loop that keeps the game running"
@@ -139,6 +151,8 @@ class Jumper:
             self.spawn_enemy( )
             self.enemy_group.update(self.player.scroll)
 
+            # measure and displays current score
+            self.score.measure_score(self.player.scroll)
             self.end_game()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
